@@ -105,7 +105,9 @@ class CalculatorUI extends StatelessWidget {
       backgroundColor: Colors.white,
       body: LayoutBuilder(
         builder: (context, constraints) {
-          final buttonSize = constraints.maxHeight / 10;
+          
+          final buttonSize = constraints.maxHeight / 10; 
+          final buttonWidth = constraints.maxWidth / 5; 
 
           return Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -122,11 +124,11 @@ class CalculatorUI extends StatelessWidget {
 
               Column(
                 children: [
-                  _buildButtonRow(calculator, ["C", "%", "⌫", "÷"], buttonSize, operatorColor: Colors.orange),
-                  _buildButtonRow(calculator, ["7", "8", "9", "×"], buttonSize, operatorColor: Colors.orange),
-                  _buildButtonRow(calculator, ["4", "5", "6", "-"], buttonSize, operatorColor: Colors.orange),
-                  _buildButtonRow(calculator, ["1", "2", "3", "+"], buttonSize, operatorColor: Colors.orange),
-                  _buildButtonRow(calculator, [".", "0", "00", "="], buttonSize, operatorColor: const Color.fromARGB(255, 33, 37, 243)),
+                  _buildButtonRow(calculator, ["C", "%", "⌫", "÷"], buttonSize, buttonWidth, operatorColor: Colors.orange),
+                  _buildButtonRow(calculator, ["7", "8", "9", "×"], buttonSize, buttonWidth, operatorColor: Colors.orange),
+                  _buildButtonRow(calculator, ["4", "5", "6", "-"], buttonSize, buttonWidth, operatorColor: Colors.orange),
+                  _buildButtonRow(calculator, ["1", "2", "3", "+"], buttonSize, buttonWidth, operatorColor: Colors.orange),
+                  _buildButtonRow(calculator, [".", "0", "00", "="], buttonSize, buttonWidth, operatorColor: const Color.fromARGB(255, 33, 37, 243)),
                 ],
               ),
 
@@ -156,8 +158,7 @@ class CalculatorUI extends StatelessWidget {
     );
   }
 
-  Widget _buildButtonRow(GetXCalculatorController calculator, List<String> labels, double buttonSize,
-      {required Color operatorColor}) {
+  Widget _buildButtonRow(GetXCalculatorController calculator, List<String> labels, double buttonSize, double buttonWidth, {required Color operatorColor}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: labels.map((label) {
@@ -199,6 +200,7 @@ class CalculatorUI extends StatelessWidget {
           color: buttonColor,
           textColor: buttonColor == operatorColor ? Colors.white : Colors.black,
           size: buttonSize,
+          width: buttonWidth,
         );
       }).toList(),
     );
@@ -211,8 +213,9 @@ class CalculatorButton extends StatelessWidget {
   final Color color;
   final Color textColor;
   final double size;
+  final double width;
 
-  CalculatorButton(this.label, this.onTap, {this.color = Colors.grey, this.textColor = Colors.black, required this.size});
+  CalculatorButton(this.label, this.onTap, {this.color = Colors.grey, this.textColor = Colors.black, required this.size, required this.width});
 
   @override
   Widget build(BuildContext context) {
@@ -221,7 +224,7 @@ class CalculatorButton extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          width: size,
+          width: width,
           height: size,
           decoration: BoxDecoration(
             color: color,

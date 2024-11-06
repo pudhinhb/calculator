@@ -113,13 +113,14 @@ class CalculatorUI extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final calculator = Provider.of<CalculatorProvider>(context);
+    final double screenHeight = MediaQuery.of(context).size.height;
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double buttonSize = screenHeight / 11; 
 
     return Scaffold(
       backgroundColor: Colors.white,
       body: LayoutBuilder(
         builder: (context, constraints) {
-          final buttonSize = constraints.maxHeight / 11;
-          
           return Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

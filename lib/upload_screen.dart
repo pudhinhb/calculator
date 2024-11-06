@@ -9,7 +9,8 @@ class UploadScreen extends StatefulWidget {
 }
 
 class _UploadScreenState extends State<UploadScreen> {
-  File? _image;
+  // Create a ValueNotifier for image state
+  ValueNotifier<File?> _imageNotifier = ValueNotifier<File?>(null);
 
   Future<void> _requestPermissions() async {
     final cameraStatus = await Permission.camera.request();
@@ -58,9 +59,7 @@ class _UploadScreenState extends State<UploadScreen> {
     final pickedFile = await picker.pickImage(source: source);
 
     if (pickedFile != null) {
-      setState(() {
-        _image = File(pickedFile.path);
-      });
+      _imageNotifier.value = File(pickedFile.path);
     } else {
       _showErrorDialog("No image selected.");
     }
@@ -128,6 +127,10 @@ class _UploadScreenState extends State<UploadScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Get dynamic screen size using MediaQuery
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -138,64 +141,69 @@ class _UploadScreenState extends State<UploadScreen> {
               left: 20,
               child: Image.network(
                 'https://s3-eu-west-1.amazonaws.com/tpd/logos/5e904d09bf6eb70001f7b109/0x0.png',
-                height: 150, // Set the height of the logo
+                height: screenHeight * 0.15, 
               ),
             ),
-            // Centering the rest of the UI
+            
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Centered text below the logo
-                  SizedBox(height: 30), // Spacing for the logo
+                
+                  SizedBox(height: screenHeight * 0.03), 
                   Text(
                     "Upload Image",
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: screenWidth * 0.06, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: 20),
-                  // Grey background for the upload button row
+                  SizedBox(height: screenHeight * 0.02),
+              
                   Container(
                     color: Colors.grey[200],
-                    padding: EdgeInsets.symmetric(vertical: 100),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        if (_image == null)
-                          IconButton(
-                            icon: Icon(Icons.add_circle, color: Color.fromARGB(255, 24, 11, 139), size: 70),
-                            onPressed: _requestPermissions,
-                          )
-                        else
-                          Column(
-                            children: [
-                              Image.file(
-                                _image!,
-                                height: 200,
-                                width: 200,
-                                fit: BoxFit.cover,
-                              ),
-                              SizedBox(height: 20),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                    padding: EdgeInsets.symmetric(vertical: screenHeight * 0.1),
+                    child: ValueListenableBuilder<File?>(
+                      valueListenable: _imageNotifier,
+                      builder: (context, image, _) {
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (image == null)
+                              IconButton(
+                                icon: Icon(Icons.add_circle, color: Color.fromARGB(255, 24, 11, 139), size: screenHeight * 0.07),
+                                onPressed: _requestPermissions,
+                              )
+                            else
+                              Column(
                                 children: [
-                                  IconButton(
-                                    icon: Icon(Icons.edit),
-                                    color: Colors.black,
-                                    iconSize: 40,
-                                    onPressed: () => _requestPermissions(),
+                                  Image.file(
+                                    image,
+                                    height: screenHeight * 0.25, 
+                                    width: screenWidth * 0.5,   
+                                    fit: BoxFit.cover,
                                   ),
-                                  SizedBox(width: 40),
-                                  IconButton(
-                                    icon: Icon(Icons.check_circle),
-                                    color: Colors.black,
-                                    iconSize: 40,
-                                    onPressed: _showSuccessDialog,
+                                  SizedBox(height: screenHeight * 0.02),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      IconButton(
+                                        icon: Icon(Icons.edit),
+                                        color: Colors.black,
+                                        iconSize: screenWidth * 0.1,
+                                        onPressed: _requestPermissions,
+                                      ),
+                                      SizedBox(width: screenWidth * 0.1),
+                                      IconButton(
+                                        icon: Icon(Icons.check_circle),
+                                        color: Colors.black,
+                                        iconSize: screenWidth * 0.1,
+                                        onPressed: _showSuccessDialog,
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
-                            ],
-                          ),
-                      ],
+                          ],
+                        );
+                      },
                     ),
                   ),
                 ],

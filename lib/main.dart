@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'provider_calculator.dart';
 import 'getx_calculator.dart';
 import 'upload_screen.dart';
@@ -8,11 +9,11 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-       debugShowCheckedModeBanner: false,
+    return GetMaterialApp( 
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primaryColor: Colors.orange,
-        fontFamily: 'Roboto', // Add Roboto font in pubspec.yaml if not default
+        fontFamily: 'Roboto', 
         textTheme: TextTheme(
           headline1: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: Colors.black),
           bodyText1: TextStyle(fontSize: 24),
@@ -23,50 +24,44 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomeScreen extends StatefulWidget {
-  @override
-  _HomeScreenState createState() => _HomeScreenState();
-}
+class HomeScreen extends StatelessWidget {
+  final RxInt _selectedIndex = 0.obs;  
 
-class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
   final List<Widget> _screens = [
-     ProviderCalculatorScreen(),
+    ProviderCalculatorScreen(),
     GetXCalculatorScreen(),
     UploadScreen(),
   ];
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _screens[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Provider',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'GetX',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.upload),
-            label: 'Upload',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.purple,
-        unselectedItemColor: Colors.grey,
-        iconSize: 30,
-        onTap: _onItemTapped,
-      ),
+      body: Obx(() => _screens[_selectedIndex.value]), 
+      bottomNavigationBar: Obx(() {
+        return BottomNavigationBar(
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Provider',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.dashboard),
+              label: 'GetX',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.upload),
+              label: 'Upload',
+            ),
+          ],
+          currentIndex: _selectedIndex.value, 
+          selectedItemColor: Colors.purple, 
+          unselectedItemColor: Colors.grey, 
+          iconSize: MediaQuery.of(context).size.width * 0.08, 
+          onTap: (index) {
+            _selectedIndex.value = index;
+          },
+        );
+      }),
     );
   }
 }
