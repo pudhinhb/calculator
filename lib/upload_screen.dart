@@ -9,20 +9,9 @@ class UploadScreen extends StatefulWidget {
 }
 
 class _UploadScreenState extends State<UploadScreen> {
-  // Create a ValueNotifier for image state
   ValueNotifier<File?> _imageNotifier = ValueNotifier<File?>(null);
 
-  Future<void> _requestPermissions() async {
-    final cameraStatus = await Permission.camera.request();
-    final galleryStatus = await Permission.photos.request();
-
-    if (cameraStatus.isGranted && galleryStatus.isGranted) {
-      _showImageSourceDialog();
-    } else {
-      _showPermissionDeniedDialog();
-    }
-  }
-
+  // Show the image source options (Camera or Gallery)
   void _showImageSourceDialog() {
     showModalBottomSheet(
       context: context,
@@ -34,17 +23,17 @@ class _UploadScreenState extends State<UploadScreen> {
               ListTile(
                 leading: Icon(Icons.camera_alt),
                 title: Text("Camera"),
-                onTap: () {
+                onTap: () async {
                   Navigator.of(context).pop();
-                  _pickImage(ImageSource.camera);
+                  await _requestCameraPermission();
                 },
               ),
               ListTile(
                 leading: Icon(Icons.photo),
                 title: Text("Gallery"),
-                onTap: () {
+                onTap: () async {
                   Navigator.of(context).pop();
-                  _pickImage(ImageSource.gallery);
+                  await _requestGalleryPermission();
                 },
               ),
             ],
@@ -54,6 +43,28 @@ class _UploadScreenState extends State<UploadScreen> {
     );
   }
 
+  // Request camera permission
+  Future<void> _requestCameraPermission() async {
+    final cameraStatus = await Permission.camera.request();
+    if (cameraStatus.isGranted) {
+      _pickImage(ImageSource.camera);
+    } else {
+      _showPermissionDeniedDialog("Camera access is required.");
+    }
+  }
+
+  // Request gallery permission
+  Future<void> _requestGalleryPermission() async {
+    // Check for storage permission
+    final storageStatus = await Permission.storage.request();
+    if (storageStatus.isGranted) {
+      _pickImage(ImageSource.gallery);
+    } else {
+      _showPermissionDeniedDialog("Gallery access is required.");
+    }
+  }
+
+  // Pick image from the selected source (Camera or Gallery)
   Future<void> _pickImage(ImageSource source) async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: source);
@@ -65,13 +76,14 @@ class _UploadScreenState extends State<UploadScreen> {
     }
   }
 
-  void _showPermissionDeniedDialog() {
+  // Show permission denied dialog
+  void _showPermissionDeniedDialog(String message) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Permissions Denied"),
-          content: Text("Please allow camera and gallery access to upload images."),
+          title: Text("Permission Denied"),
+          content: Text(message),
           actions: <Widget>[
             TextButton(
               child: Text("OK"),
@@ -85,6 +97,7 @@ class _UploadScreenState extends State<UploadScreen> {
     );
   }
 
+  // Show error dialog
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
@@ -105,13 +118,14 @@ class _UploadScreenState extends State<UploadScreen> {
     );
   }
 
+  // Show success dialog after image submission
   void _showSuccessDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text("Success"),
-          content: Text("Image successfully submitted!"),
+          content: Text("Image successfully uploaded!"),
           actions: <Widget>[
             TextButton(
               child: Text("OK"),
@@ -127,7 +141,6 @@ class _UploadScreenState extends State<UploadScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Get dynamic screen size using MediaQuery
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
 
@@ -135,13 +148,12 @@ class _UploadScreenState extends State<UploadScreen> {
       body: SafeArea(
         child: Stack(
           children: [
-            // Logo Image positioned in the top left corner
             Positioned(
               top: 20,
               left: 20,
               child: Image.network(
                 'https://s3-eu-west-1.amazonaws.com/tpd/logos/5e904d09bf6eb70001f7b109/0x0.png',
-                height: screenHeight * 0.15, 
+                height: screenHeight * 0.15,
               ),
             ),
             
@@ -149,8 +161,7 @@ class _UploadScreenState extends State<UploadScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                
-                  SizedBox(height: screenHeight * 0.03), 
+                  SizedBox(height: screenHeight * 0.03),
                   Text(
                     "Upload Image",
                     style: TextStyle(fontSize: screenWidth * 0.06, fontWeight: FontWeight.bold),
@@ -169,15 +180,15 @@ class _UploadScreenState extends State<UploadScreen> {
                             if (image == null)
                               IconButton(
                                 icon: Icon(Icons.add_circle, color: Color.fromARGB(255, 24, 11, 139), size: screenHeight * 0.07),
-                                onPressed: _requestPermissions,
+                                onPressed: _showImageSourceDialog,
                               )
                             else
                               Column(
                                 children: [
                                   Image.file(
                                     image,
-                                    height: screenHeight * 0.25, 
-                                    width: screenWidth * 0.5,   
+                                    height: screenHeight * 0.25,
+                                    width: screenWidth * 0.5,
                                     fit: BoxFit.cover,
                                   ),
                                   SizedBox(height: screenHeight * 0.02),
@@ -188,7 +199,7 @@ class _UploadScreenState extends State<UploadScreen> {
                                         icon: Icon(Icons.edit),
                                         color: Colors.black,
                                         iconSize: screenWidth * 0.1,
-                                        onPressed: _requestPermissions,
+                                        onPressed: _showImageSourceDialog,
                                       ),
                                       SizedBox(width: screenWidth * 0.1),
                                       IconButton(

@@ -14,9 +14,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.orange,
         fontFamily: 'Roboto', 
-        textTheme: TextTheme(
-          headline1: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: Colors.black),
-          bodyText1: TextStyle(fontSize: 24),
+        textTheme: const TextTheme(
+          displayLarge: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: Colors.black),
+          bodyLarge: TextStyle(fontSize: 24),
         ),
       ),
       home: HomeScreen(),
