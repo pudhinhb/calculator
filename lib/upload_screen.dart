@@ -11,13 +11,12 @@ class UploadScreen extends StatefulWidget {
 class _UploadScreenState extends State<UploadScreen> {
   ValueNotifier<File?> _imageNotifier = ValueNotifier<File?>(null);
 
-  // Show the image source options (Camera or Gallery)
   void _showImageSourceDialog() {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
         return Container(
-          height: 120,
+          height: MediaQuery.of(context).size.height * 0.2,
           child: Column(
             children: [
               ListTile(
@@ -43,7 +42,6 @@ class _UploadScreenState extends State<UploadScreen> {
     );
   }
 
-  // Request camera permission
   Future<void> _requestCameraPermission() async {
     final cameraStatus = await Permission.camera.request();
     if (cameraStatus.isGranted) {
@@ -53,9 +51,7 @@ class _UploadScreenState extends State<UploadScreen> {
     }
   }
 
-  // Request gallery permission
   Future<void> _requestGalleryPermission() async {
-    // Check for storage permission
     final storageStatus = await Permission.storage.request();
     if (storageStatus.isGranted) {
       _pickImage(ImageSource.gallery);
@@ -64,7 +60,6 @@ class _UploadScreenState extends State<UploadScreen> {
     }
   }
 
-  // Pick image from the selected source (Camera or Gallery)
   Future<void> _pickImage(ImageSource source) async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: source);
@@ -76,7 +71,6 @@ class _UploadScreenState extends State<UploadScreen> {
     }
   }
 
-  // Show permission denied dialog
   void _showPermissionDeniedDialog(String message) {
     showDialog(
       context: context,
@@ -97,7 +91,6 @@ class _UploadScreenState extends State<UploadScreen> {
     );
   }
 
-  // Show error dialog
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
@@ -118,7 +111,6 @@ class _UploadScreenState extends State<UploadScreen> {
     );
   }
 
-  // Show success dialog after image submission
   void _showSuccessDialog() {
     showDialog(
       context: context,
@@ -149,8 +141,8 @@ class _UploadScreenState extends State<UploadScreen> {
         child: Stack(
           children: [
             Positioned(
-              top: 20,
-              left: 20,
+              top: screenHeight * 0.02,
+              left: screenWidth * 0.05,
               child: Image.network(
                 'https://s3-eu-west-1.amazonaws.com/tpd/logos/5e904d09bf6eb70001f7b109/0x0.png',
                 height: screenHeight * 0.15,
@@ -164,7 +156,10 @@ class _UploadScreenState extends State<UploadScreen> {
                   SizedBox(height: screenHeight * 0.03),
                   Text(
                     "Upload Image",
-                    style: TextStyle(fontSize: screenWidth * 0.06, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: screenWidth * 0.06,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   SizedBox(height: screenHeight * 0.02),
               
@@ -179,7 +174,11 @@ class _UploadScreenState extends State<UploadScreen> {
                           children: [
                             if (image == null)
                               IconButton(
-                                icon: Icon(Icons.add_circle, color: Color.fromARGB(255, 24, 11, 139), size: screenHeight * 0.07),
+                                icon: Icon(
+                                  Icons.add_circle, 
+                                  color: Color.fromARGB(255, 24, 11, 139),
+                                  size: screenHeight * 0.07,
+                                ),
                                 onPressed: _showImageSourceDialog,
                               )
                             else

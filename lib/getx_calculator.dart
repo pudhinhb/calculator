@@ -105,9 +105,13 @@ class CalculatorUI extends StatelessWidget {
       backgroundColor: Colors.white,
       body: LayoutBuilder(
         builder: (context, constraints) {
-          
-          final buttonSize = constraints.maxHeight / 10; 
+          // Dynamically calculate button size based on available height and width
+          final buttonSize = constraints.maxHeight / 11; 
           final buttonWidth = constraints.maxWidth / 5; 
+
+          // Dynamically calculate font size based on available screen size
+          final outputFontSize = constraints.maxHeight * 0.06;  
+          final equationFontSize = constraints.maxHeight * 0.03;  
 
           return Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -118,10 +122,9 @@ class CalculatorUI extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Image.network(
                   'https://s3-eu-west-1.amazonaws.com/tpd/logos/5e904d09bf6eb70001f7b109/0x0.png',
-                  height: 150,
-                ),
+                  height: constraints.maxHeight * 0.2, // Adjust logo size based on screen height
+                )
               ),
-
               Column(
                 children: [
                   _buildButtonRow(calculator, ["C", "%", "⌫", "÷"], buttonSize, buttonWidth, operatorColor: Colors.orange),
@@ -131,7 +134,6 @@ class CalculatorUI extends StatelessWidget {
                   _buildButtonRow(calculator, [".", "0", "00", "="], buttonSize, buttonWidth, operatorColor: const Color.fromARGB(255, 33, 37, 243)),
                 ],
               ),
-
               Container(
                 color: Colors.grey[200],
                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
@@ -142,11 +144,11 @@ class CalculatorUI extends StatelessWidget {
                   children: [
                     Obx(() => Text(
                       calculator.output.value,
-                      style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: Colors.black),
+                      style: TextStyle(fontSize: outputFontSize, fontWeight: FontWeight.bold, color: Colors.black),
                     )),
                     Obx(() => Text(
                       calculator.equation.value,
-                      style: TextStyle(fontSize: 24, color: Colors.grey),
+                      style: TextStyle(fontSize: equationFontSize, color: Colors.grey),
                     )),
                   ],
                 ),
@@ -167,7 +169,7 @@ class CalculatorUI extends StatelessWidget {
         if (["÷", "×", "-", "+", "="].contains(label)) {
           buttonColor = operatorColor;
         } else {
-          buttonColor = Colors.grey[200]!;
+          buttonColor = Colors.grey[200]!; // Background color for numbers
         }
 
         return CalculatorButton(
@@ -236,7 +238,7 @@ class CalculatorButton extends StatelessWidget {
                 : Text(
                     label,
                     style: TextStyle(
-                      fontSize: 38,
+                      fontSize: size * 0.5, // Font size dynamically based on button size
                       color: textColor,
                     ),
                   ),

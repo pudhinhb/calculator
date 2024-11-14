@@ -116,6 +116,7 @@ class CalculatorUI extends StatelessWidget {
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
     final double buttonSize = screenHeight / 11; 
+    final double textSize = screenHeight / 20;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -130,11 +131,10 @@ class CalculatorUI extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Image.network(
                   'https://s3-eu-west-1.amazonaws.com/tpd/logos/5e904d09bf6eb70001f7b109/0x0.png',
-                  height: 150,
+                  height: screenHeight * 0.15,
                 ),
               ),
-
-              Column(
+                Column(
                 children: [
                   _buildButtonRow(calculator, ["C", "%", "⌫", "÷"], buttonSize, operatorColor: Colors.orange),
                   _buildButtonRow(calculator, ["7", "8", "9", "×"], buttonSize, operatorColor: Colors.orange),
@@ -143,7 +143,6 @@ class CalculatorUI extends StatelessWidget {
                   _buildButtonRow(calculator, [".", "0", "00", "="], buttonSize, operatorColor: const Color.fromARGB(255, 33, 37, 243)),
                 ],
               ),
-
               Container(
                 color: Colors.grey[200],
                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
@@ -154,15 +153,17 @@ class CalculatorUI extends StatelessWidget {
                   children: [
                     Text(
                       calculator.output,
-                      style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: Colors.black),
+                      style: TextStyle(fontSize: textSize, fontWeight: FontWeight.bold, color: Colors.black),
                     ),
                     Text(
                       calculator.equation,
-                      style: TextStyle(fontSize: 24, color: Colors.grey),
+                      style: TextStyle(fontSize: textSize * 0.6, color: Colors.grey),
                     ),
                   ],
                 ),
               ),
+
+             
             ],
           );
         },
@@ -231,7 +232,7 @@ class CalculatorButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: EdgeInsets.all(size * 0.1),
       child: GestureDetector(
         onTap: onTap,
         child: Container(
@@ -243,11 +244,11 @@ class CalculatorButton extends StatelessWidget {
           ),
           child: Center(
             child: label == "⌫"
-                ? Icon(Icons.backspace, color: Colors.black)
+                ? Icon(Icons.backspace, color: textColor, size: size * 0.5)
                 : Text(
                     label,
                     style: TextStyle(
-                      fontSize: 38,
+                      fontSize: size * 0.4,
                       color: textColor,
                     ),
                   ),
