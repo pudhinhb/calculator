@@ -1,7 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'dart:io';
+import 'package:device_info_plus/device_info_plus.dart';
 
 class UploadScreen extends StatefulWidget {
   @override
@@ -9,7 +11,7 @@ class UploadScreen extends StatefulWidget {
 }
 
 class _UploadScreenState extends State<UploadScreen> {
-  ValueNotifier<File?> _imageNotifier = ValueNotifier<File?>(null);
+  final ValueNotifier<File?> _imageNotifier = ValueNotifier<File?>(null);
 
   void _showImageSourceDialog() {
     showModalBottomSheet(
@@ -23,7 +25,7 @@ class _UploadScreenState extends State<UploadScreen> {
                 leading: Icon(Icons.camera_alt),
                 title: Text("Camera"),
                 onTap: () async {
-                  Navigator.of(context).pop();
+                  Navigator.pop(context);
                   await _requestCameraPermission();
                 },
               ),
@@ -31,7 +33,7 @@ class _UploadScreenState extends State<UploadScreen> {
                 leading: Icon(Icons.photo),
                 title: Text("Gallery"),
                 onTap: () async {
-                  Navigator.of(context).pop();
+                  Navigator.pop(context);
                   await _requestGalleryPermission();
                 },
               ),
@@ -47,16 +49,34 @@ class _UploadScreenState extends State<UploadScreen> {
     if (cameraStatus.isGranted) {
       _pickImage(ImageSource.camera);
     } else {
-      _showPermissionDeniedDialog("Camera access is required.");
+      _showDialog("Permission Denied", "Camera access is required to take a photo.");
     }
   }
 
   Future<void> _requestGalleryPermission() async {
-    final storageStatus = await Permission.storage.request();
-    if (storageStatus.isGranted) {
+    PermissionStatus galleryStatus;
+
+    if (Platform.isAndroid) {
+  
+      final deviceInfo = DeviceInfoPlugin();
+      final androidInfo = await deviceInfo.androidInfo;
+
+      if (androidInfo.version.sdkInt >= 33) {
+        
+        galleryStatus = await Permission.photos.request();
+      } else {
+        
+        galleryStatus = await Permission.storage.request();
+      }
+    } else {
+      // For other platforms, skip this
+      return;
+    }
+
+    if (galleryStatus.isGranted) {
       _pickImage(ImageSource.gallery);
     } else {
-      _showPermissionDeniedDialog("Gallery access is required.");
+      _showDialog("Permission Denied", "Gallery access is required to upload an image.");
     }
   }
 
@@ -67,63 +87,21 @@ class _UploadScreenState extends State<UploadScreen> {
     if (pickedFile != null) {
       _imageNotifier.value = File(pickedFile.path);
     } else {
-      _showErrorDialog("No image selected.");
+      _showDialog("Error", "No image selected.");
     }
   }
 
-  void _showPermissionDeniedDialog(String message) {
+  void _showDialog(String title, String message) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Permission Denied"),
+          title: Text(title),
           content: Text(message),
           actions: <Widget>[
             TextButton(
               child: Text("OK"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showErrorDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Error"),
-          content: Text(message),
-          actions: <Widget>[
-            TextButton(
-              child: Text("OK"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showSuccessDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Success"),
-          content: Text("Image successfully uploaded!"),
-          actions: <Widget>[
-            TextButton(
-              child: Text("OK"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+              onPressed: () => Navigator.of(context).pop(),
             ),
           ],
         );
@@ -148,7 +126,6 @@ class _UploadScreenState extends State<UploadScreen> {
                 height: screenHeight * 0.15,
               ),
             ),
-            
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -162,7 +139,6 @@ class _UploadScreenState extends State<UploadScreen> {
                     ),
                   ),
                   SizedBox(height: screenHeight * 0.02),
-              
                   Container(
                     color: Colors.grey[200],
                     padding: EdgeInsets.symmetric(vertical: screenHeight * 0.1),
@@ -175,7 +151,7 @@ class _UploadScreenState extends State<UploadScreen> {
                             if (image == null)
                               IconButton(
                                 icon: Icon(
-                                  Icons.add_circle, 
+                                  Icons.add_circle,
                                   color: Color.fromARGB(255, 24, 11, 139),
                                   size: screenHeight * 0.07,
                                 ),
@@ -205,7 +181,7 @@ class _UploadScreenState extends State<UploadScreen> {
                                         icon: Icon(Icons.check_circle),
                                         color: Colors.black,
                                         iconSize: screenWidth * 0.1,
-                                        onPressed: _showSuccessDialog,
+                                        onPressed: () => _showDialog("Success", "Image successfully uploaded!"),
                                       ),
                                     ],
                                   ),

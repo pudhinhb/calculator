@@ -39,13 +39,13 @@ class CalculatorProvider extends ChangeNotifier {
     if (_output.isEmpty) return;
     if (_isOperatorPressed) {
       _operator = operator;
-      _equation = _equation.substring(0, _equation.length - 1) + " " + operator;
+      _equation = "${_equation.substring(0, _equation.length - 1)} $operator";
     } else {
       if (_operator.isNotEmpty) {
         calculate();
       }
       _operator = operator;
-      _equation = _output + " " + operator;
+      _equation = "$_output $operator";
       _result = double.parse(_output);
       _isOperatorPressed = true;
     }
@@ -77,7 +77,7 @@ class CalculatorProvider extends ChangeNotifier {
         break;
     }
     _output = _result == _result.toInt() ? _result.toInt().toString() : _result.toString();
-    _equation += " " + currentNumber.toString() + " =";  
+    _equation += " $currentNumber =";  
     _operator = '';
     _isOperatorPressed = false;
     notifyListeners();
