@@ -127,11 +127,11 @@ class CalculatorUI extends StatelessWidget {
             children: [
               Container(
                 color: Colors.white70,
-                padding: const EdgeInsets.all(16.0),
-                alignment: Alignment.centerLeft,
-                child: Image.network(
-                  'https://s3-eu-west-1.amazonaws.com/tpd/logos/5e904d09bf6eb70001f7b109/0x0.png',
-                  height: screenHeight * 0.15,
+                padding: const EdgeInsets.all(50.0),
+                alignment: Alignment.center,
+                child: Text(
+                  'CALCULATOR',
+                   style: TextStyle(fontSize: textSize * 0.6, color: Colors.black,fontWeight: FontWeight.bold,fontStyle: FontStyle.italic),
                 ),
               ),
                 Column(

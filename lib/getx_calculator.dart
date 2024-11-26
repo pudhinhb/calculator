@@ -120,10 +120,7 @@ class CalculatorUI extends StatelessWidget {
                 color: Colors.white70,
                 padding: const EdgeInsets.all(16.0),
                 alignment: Alignment.centerLeft,
-                child: Image.network(
-                  'https://s3-eu-west-1.amazonaws.com/tpd/logos/5e904d09bf6eb70001f7b109/0x0.png',
-                  height: constraints.maxHeight * 0.2, // Adjust logo size based on screen height
-                )
+                
               ),
               Column(
                 children: [

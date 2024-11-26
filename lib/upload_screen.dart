@@ -118,14 +118,7 @@ class _UploadScreenState extends State<UploadScreen> {
       body: SafeArea(
         child: Stack(
           children: [
-            Positioned(
-              top: screenHeight * 0.02,
-              left: screenWidth * 0.05,
-              child: Image.network(
-                'https://s3-eu-west-1.amazonaws.com/tpd/logos/5e904d09bf6eb70001f7b109/0x0.png',
-                height: screenHeight * 0.15,
-              ),
-            ),
+            
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
